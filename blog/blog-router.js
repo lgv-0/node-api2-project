@@ -119,4 +119,29 @@ router.delete("/posts/:id", (req, res)=>
     })
 });
 
+router.put("/posts/:id", (req, res)=>
+{
+    if (isNaN(req.params.id) ||
+        req.body.title === undefined ||
+        req.body.contents=== undefined)
+    {
+        res.status(400).json({"error":"Invalid request paramaters"});
+        return;
+    }
+
+    let NewBuild = 
+    {
+        title:req.body.title,
+        contents:req.body.contents
+    };
+
+    DBControl.update(req.params.id, NewBuild).then(()=>
+    {
+        res.status(200).json(NewBuild);
+    }).catch((error)=>
+    {
+        res.status(500).json({"error":"Couldn't update data..?"});
+    })
+});
+
 module.exports = router;
