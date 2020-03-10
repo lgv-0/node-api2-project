@@ -94,4 +94,29 @@ router.get("/posts/:id/comments", (req, res)=>
     });
 });
 
+router.delete("/posts/:id", (req, res)=>
+{
+    if (isNaN(req.params.id))
+    {
+        res.status(400).json({"error":"Invalid request paramaters"});
+        return;
+    }
+
+    DBControl.findById(req.params.id).then((response)=>
+    {
+        let Original = response;
+
+        DBControl.remove(req.params.id).then(()=>
+        {
+            res.status(200).json(Original);
+        }).catch((error)=>
+        {
+            res.status(500).json({"error":"Couldn't delete data..?"});
+        })
+    }).catch((error)=>
+    {
+        res.status(500).json({"error":"Internal connection error"});
+    })
+});
+
 module.exports = router;
