@@ -9,6 +9,41 @@ router.get("/", (req, res)=>
     res.status(200).json({"hi":"there"});
 });
 
+router.post("/posts/", (req, res)=>
+{
+    if (req.body.title === undefined ||
+        req.body.contents === undefined)
+    {
+        res.status(400).json({"error":"Invalid request paramaters"});
+        return;
+    }
+
+    DBControl.insert(req.body).then((response)=>
+    {
+        res.status(201).json(response);
+    }).catch((error)=>
+    {
+        res.status(500).json({"error":"Internal connection error"});
+    });
+});
+
+router.post("/posts/:id/comments", (req, res)=>
+{
+    if (req.body.text === undefined || isNaN(req.params.id))
+    {
+        res.status(400).json({"error":"Invalid request paramaters"});
+        return;
+    }
+
+    DBControl.insertComment({...req.body, post_id:req.params.id}).then((response)=>
+    {
+        res.status(201).json(response);
+    }).catch((error)=>
+    {
+        res.status(500).json({"error":"Internal connection error"});
+    });
+});
+
 router.get("/posts/:id?", (req, res)=>
 {
     let ID = req.params.id;
